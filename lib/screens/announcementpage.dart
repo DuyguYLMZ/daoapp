@@ -16,15 +16,14 @@ class AnnouncementPage extends StatefulWidget {
 
 class _AnnouncementPageState extends State<AnnouncementPage> {
   bool active = false;
-  final DateFormat formatter = DateFormat('MM/dd/yyyy');
+
   List<Announcement> cryptoList = [];
-  CollectionReference _collectionRef = FirebaseFirestore.instance.collection('dao');
+  final DateFormat formatter = DateFormat('MM/dd/yyyy');
+
 
   @override
   void initState() {
     super.initState();
-    getData();
-
   }
 
   @override
@@ -38,14 +37,13 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: FutureBuilder(
+            future: getData(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(
                   child: const Text('Loading...'),
                 );
               } else {
-                // List<dynamic> json=jsonDecode(snapshot.data.body);
-
                 return SingleChildScrollView(
                   child: ExpansionPanelList(
                     expansionCallback: (panelIndex, isExpanded) {
@@ -59,7 +57,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           },
                           body: Container(
                             child: Column(
-                              children: [CardWidget(context, 0, cryptoList)],
+                              children: [CardWidget(context,0, cryptoList)],
                             ),
                           ),
                           isExpanded: active,
@@ -70,27 +68,34 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                 );
               }
             },
-            future: getData(),
+
           )),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
   Future getData() async {
-    QuerySnapshot querySnapshot = await _collectionRef.get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("dao").get();
 
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-
-    for (int i = 0; i < allData.length; i++) {
-      cryptoList.add(  Announcement(
-        (allData[i] as dynamic)['totalAmount'],
-        (allData[i] as dynamic)['cryptoName'],
-        (allData[i] as dynamic)['announcementContent'],
-      ));
-
-    }
-
-    return querySnapshot;
+    await FirebaseFirestore.instance.collection("dao").get().then((querySnapshot) async {
+      querySnapshot.docs.forEach((result) async {
+        await FirebaseFirestore.instance
+            .collection("dao")
+            .doc("010122")
+            .collection("post1")
+            .get()
+            .then((querySnapshot) {
+          querySnapshot.docs.forEach((result) {
+              cryptoList.add(  Announcement(
+                result.data()['totalAmount'],
+                result.data()['cryptoName'],
+                result.data()['announcementContent'],
+              ));
+          });
+        });
+      });
+    });
+  return  querySnapshot;
   }
 
   Future<void> _onRefresh() async {
