@@ -57,7 +57,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           },
                           body: Container(
                             child: Column(
-                              children: [CardWidget(context,0, cryptoList)],
+                              children: [//CardWidget(context,0, cryptoList)
+                               ],
                             ),
                           ),
                           isExpanded: active,

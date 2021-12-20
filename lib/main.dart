@@ -1,5 +1,6 @@
 import 'package:dao/screens/announcementpage.dart';
 import 'package:dao/screens/homepage.dart';
+import 'package:dao/screens/loginpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: AnnouncementPage(),
+      home: LoginPage(),
       //home: MyHomePage(title: 'DAO Home Page'),
     );
   }
