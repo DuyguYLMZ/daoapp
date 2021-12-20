@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "441414281486",
+    "firebase_url": "https://daoapp-2c1af-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "daoapp-2c1af",
+    "storage_bucket": "daoapp-2c1af.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441414281486:android:816d1f6666cab7b26b8f5f",
+        "android_client_info": {
+          "package_name": "com.dao.dao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441414281486-r4o9dhiksv603snp27nbnl5dk61lt6ak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIl_LGEa2UM31goQ6J4fcZy4AIZKFPsdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441414281486-r4o9dhiksv603snp27nbnl5dk61lt6ak.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "441414281486-mlfiqe881fjt1vvr6hr0gr1bpmnrdjac.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dao.dao"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
