@@ -49,7 +49,7 @@ Widget CardWidget(BuildContext context, int index, List<Announcement> Announceme
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Expanded(child: AnnouncementIcon(AnnouncementList[index])),
+                            Expanded(child: AnnouncementIcon(AnnouncementList  [index])),
                             AnnouncementChange(AnnouncementList[index]),
                           ],
                         ),
