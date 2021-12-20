@@ -25,8 +25,6 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
 
