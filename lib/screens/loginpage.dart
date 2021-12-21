@@ -68,108 +68,119 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Form(
                       key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          TextFormField(
-                            controller: _emailTextController,
-                            focusNode: _focusEmail,
-                            validator: (value) => Validator.validateEmail(
-                              email: value,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: "Email",
-                              errorBorder: UnderlineInputBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                                borderSide: BorderSide(
-                                  color: Colors.red,
+                      child: Center(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height/3,
+                          width: MediaQuery.of(context).size.width/3,
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                controller: _emailTextController,
+                                focusNode: _focusEmail,
+                                validator: (value) => Validator.validateEmail(
+                                  email: value,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: "Email",
+                                  errorBorder: UnderlineInputBorder(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                    borderSide: BorderSide(
+                                      color: Colors.red,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _passwordTextController,
-                            focusNode: _focusPassword,
-                            obscureText: true,
-                            validator: (value) => Validator.validatePassword(
-                              password: value,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: "Password",
-                              errorBorder: UnderlineInputBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                                borderSide: BorderSide(
-                                  color: Colors.red,
+                              SizedBox(height: 8.0),
+                              TextFormField(
+                                controller: _passwordTextController,
+                                focusNode: _focusPassword,
+                                obscureText: true,
+                                validator: (value) => Validator.validatePassword(
+                                  password: value,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: "Password",
+                                  errorBorder: UnderlineInputBorder(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                    borderSide: BorderSide(
+                                      color: Colors.red,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          SizedBox(height: 24.0),
-                          _isProcessing
-                              ? CircularProgressIndicator()
-                              : Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    _focusEmail.unfocus();
-                                    _focusPassword.unfocus();
+                              SizedBox(height: 24.0),
+                              _isProcessing
+                                  ? CircularProgressIndicator()
+                                  : Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(50.0),
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          _focusEmail.unfocus();
+                                          _focusPassword.unfocus();
 
-                                    if (_formKey.currentState
-                                        .validate()) {
-                                      setState(() {
-                                        _isProcessing = true;
-                                      });
+                                          if (_formKey.currentState
+                                              .validate()) {
+                                            setState(() {
+                                              _isProcessing = true;
+                                            });
 
-                                      User user = await FireAuth.signInUsingEmailPassword(
-                                        email: _emailTextController.text,
-                                        password:
-                                        _passwordTextController.text,
-                                      );
+                                            User user = await FireAuth.signInUsingEmailPassword(
+                                              email: _emailTextController.text,
+                                              password:
+                                              _passwordTextController.text,
+                                            );
 
-                                      setState(() {
-                                        _isProcessing = false;
-                                      });
+                                            setState(() {
+                                              _isProcessing = false;
+                                            });
 
-                                      if (user != null) {
-                                        Navigator.of(context)
-                                            .pushReplacement(
+                                            if (user != null) {
+                                              Navigator.of(context)
+                                                  .pushReplacement(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AnnouncementPage(),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        child: Center(
+                                          child: Text(
+                                            'Sign In',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                /*  SizedBox(width: 24.0),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                      *//*  Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                AnnouncementPage(),
+                                                RegisterPage(),
                                           ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  child: Text(
-                                    'Sign In',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            /*  SizedBox(width: 24.0),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                  *//*  Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            RegisterPage(),
+                                        );*//*
+                                      },
+                                      child: Text(
+                                        'Register',
+                                        style: TextStyle(color: Colors.white),
                                       ),
-                                    );*//*
-                                  },
-                                  child: Text(
-                                    'Register',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),*/
+                                    ),
+                                  ),*/
+                                ],
+                              )
                             ],
-                          )
-                        ],
+                          ),
+                        ),
                       ),
                     )
                   ],

@@ -1,10 +1,10 @@
-import 'package:dao/model/announcement.dart';
+import 'package:dao/model/info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 // ignore: non_constant_identifier_names
-Widget CardWidget(BuildContext context, int index, List<Announcement> AnnouncementList) {
+Widget CardWidget(BuildContext context, int index, List<Info> AnnouncementList) {
   return Card(
     shape: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
