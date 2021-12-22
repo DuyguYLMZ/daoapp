@@ -70,8 +70,8 @@ class _LoginPageState extends State<LoginPage> {
                       key: _formKey,
                       child: Center(
                         child: Container(
-                          height: MediaQuery.of(context).size.height/3,
-                          width: MediaQuery.of(context).size.width/3,
+                          height: MediaQuery.of(context).size.height/2,
+                          width: MediaQuery.of(context).size.width/2,
                           child: Column(
                             children: <Widget>[
                               TextFormField(
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                                 children: [
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(50.0),
+                                      padding: const EdgeInsets.all(5.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
                                           _focusEmail.unfocus();

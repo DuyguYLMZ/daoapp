@@ -1,12 +1,12 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dao/model/announcement.dart';
 import 'package:dao/model/info.dart';
+import 'package:dao/util/dataprovider.dart';
 import 'package:dao/widgets/cardwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AnnouncementPage extends StatefulWidget {
   AnnouncementPage({Key key, this.title}) : super(key: key);
@@ -21,18 +21,37 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   List<Info> cryptoList = [];
   final DateFormat formatter = DateFormat('MM/dd/yyyy');
   List<Announcement> dateList = [];
+  DataProvider _provider;
 
   @override
   void initState() {
     super.initState();
+    getAnnocumentList();
   }
 
   @override
   Widget build(BuildContext context) {
-    String createDate = formatter.format(DateTime.now());
+    this._provider = Provider.of<DataProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hello"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Hello"),
+            FutureBuilder(
+              future: getWalletAmount(),
+              builder: (context,snap){
+                if (!snap.hasData) {
+                  return Text('Loading...');
+                }
+                else{
+                  return Text("Total: "+_provider.getWalletAmount());
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: Container(
           height: MediaQuery.of(context).size.height,
@@ -50,10 +69,10 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                   separatorBuilder: (context, index) {
                     return const Divider(height: 1.0);
                   },
-                  itemBuilder: (context, index) {
-                    final item = dateList[index];
+                  itemBuilder: (context, indexx) {
                     return ExpansionTile(
-                        title: Text(item.toString()),
+                        title:
+                            Text(dateList[indexx].announcementDate.toString()),
                         children: [
                           ConstrainedBox(
                             constraints: BoxConstraints(
@@ -68,7 +87,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                       shrinkWrap: true, //just set this property
                                       padding: const EdgeInsets.all(8.0),
                                       itemCount:
-                                          dateList[index].infoList.length,
+                                          dateList[indexx].infoList.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                             padding:
@@ -76,7 +95,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                             height: 120,
                                             width: double.maxFinite,
                                             child: CardWidget(context, index,
-                                                dateList[index].infoList));
+                                                dateList[indexx].infoList));
                                       }),
                                 ),
                               ],
@@ -95,7 +114,6 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   Future getData() async {
     CollectionReference _collectionRef =
         FirebaseFirestore.instance.collection('dao');
-
     QuerySnapshot querySnapshot = await _collectionRef.get();
 
     for (int i = 0; i < dateList.length; i++) {
@@ -106,10 +124,11 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
         querySnapshot.docs.forEach((result) async {
           await FirebaseFirestore.instance
               .collection("dao")
-              .doc(dateList[i].announcementDate)
+              .doc(dateList[i].announcementDate.toString())
               .collection("post1")
               .get()
               .then((querySnapshot) {
+            this.cryptoList = [];
             querySnapshot.docs.forEach((result) {
               if (this.cryptoList == null) {
                 this.cryptoList = [];
@@ -127,6 +146,12 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                     result.data()['cryptoName'],
                     result.data()['announcementContent'],
                   ));
+                  for (var date in dateList) {
+                    if (dateList[i].announcementDate.toString() ==
+                        date.announcementDate.toString()) {
+                      dateList[i].infoList = cryptoList;
+                    }
+                  }
                 }
               } else {
                 cryptoList.add(Info(
@@ -134,29 +159,17 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                   result.data()['cryptoName'],
                   result.data()['announcementContent'],
                 ));
+                for (var date in dateList) {
+                  if (dateList[i].announcementDate.toString() ==
+                      date.announcementDate.toString()) {
+                    dateList[i].infoList = cryptoList;
+                  }
+                }
               }
             });
           });
         });
       });
-      querySnapshot.docs.map((doc) {
-        if (this.dateList == null) {
-          this.dateList = [];
-        }
-        if (dateList.length > 0) {
-          bool isExsist = false;
-          for (var data in dateList) {
-            if (data == doc.id) {
-              isExsist = true;
-            }
-          }
-          if (!isExsist) {
-            dateList.add(Announcement(cryptoList, doc.id));
-          }
-        } else {
-          dateList.add(Announcement(cryptoList, doc.id));
-        }
-      }).toList();
     }
 
     return querySnapshot;
@@ -169,4 +182,59 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
     return 'success';
   }
+
+  Future getAnnocumentList() async {
+    CollectionReference _collectionRef =
+        FirebaseFirestore.instance.collection('dao');
+
+    dateList = [];
+    QuerySnapshot querySnapshot = await _collectionRef.get();
+    querySnapshot.docs.map((doc) {
+      if (this.dateList == null) {
+        this.dateList = [];
+      }
+      if (dateList.length > 0) {
+        bool isExsist = false;
+        for (var data in dateList) {
+          if (data.announcementDate == doc.id) {
+            isExsist = true;
+          }
+        }
+        if (!isExsist) {
+          dateList.add(Announcement([], doc.id));
+        }
+      } else {
+        dateList.add(Announcement([], doc.id));
+      }
+    }).toList();
+
+
+  }
+
+  Future getWalletAmount() async{
+    CollectionReference _collectionRef =
+    FirebaseFirestore.instance.collection('wallet');
+    QuerySnapshot querySnapshot = await _collectionRef.get();
+
+    await FirebaseFirestore.instance
+        .collection("wallet")
+        .get()
+        .then((querySnapshot) async {
+      querySnapshot.docs.forEach((result) async {
+        await FirebaseFirestore.instance
+            .collection("wallet")
+            .doc("total")
+            .get()
+            .then((querySnapshot) {
+          setState(() {
+            _provider.setWalletAmount(querySnapshot.data()["amount"]);
+          });
+
+        });
+      });
+    });
+
+    return querySnapshot;
+  }
+
 }
