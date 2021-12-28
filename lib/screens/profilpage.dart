@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dao/controls/fireauth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'loginpage.dart';
 class ProfilePage extends StatefulWidget {
   final User user;
 
-  const ProfilePage({ this.user});
+  const ProfilePage({this.user});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -16,8 +17,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isSendingVerification = false;
   bool _isSigningOut = false;
-
-   User _currentUser;
+  User _currentUser;
 
   @override
   void initState() {
@@ -47,81 +47,82 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: 16.0),
             _currentUser.emailVerified
                 ? Text(
-              'Email verified',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1
-                  .copyWith(color: Colors.green),
-            )
+                    'Email verified',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(color: Colors.green),
+                  )
                 : Text(
-              'Email not verified',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1
-                  .copyWith(color: Colors.red),
-            ),
+                    'Email not verified',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(color: Colors.red),
+                  ),
             SizedBox(height: 16.0),
             _isSendingVerification
                 ? CircularProgressIndicator()
                 : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    setState(() {
-                      _isSendingVerification = true;
-                    });
-                    await _currentUser.sendEmailVerification();
-                    setState(() {
-                      _isSendingVerification = false;
-                    });
-                  },
-                  child: Text('Verify email'),
-                ),
-                SizedBox(width: 8.0),
-                IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: () async {
-                    User user = await FireAuth.refreshUser(_currentUser);
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            _isSendingVerification = true;
+                          });
+                          await _currentUser.sendEmailVerification();
+                          setState(() {
+                            _isSendingVerification = false;
+                          });
+                        },
+                        child: Text('Verify email'),
+                      ),
+                      SizedBox(width: 8.0),
+                      IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: () async {
+                          User user = await FireAuth.refreshUser(_currentUser);
 
-                    if (user != null) {
-                      setState(() {
-                        _currentUser = user;
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
+                          if (user != null) {
+                            setState(() {
+                              _currentUser = user;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
             SizedBox(height: 16.0),
             _isSigningOut
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _isSigningOut = true;
-                });
-                await FirebaseAuth.instance.signOut();
-                setState(() {
-                  _isSigningOut = false;
-                });
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    onPressed: () async {
+                      setState(() {
+                        _isSigningOut = true;
+                      });
+                      await FirebaseAuth.instance.signOut();
+                      setState(() {
+                        _isSigningOut = false;
+                      });
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Sign out'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   ),
-                );
-              },
-              child: Text('Sign out'),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
+
 }

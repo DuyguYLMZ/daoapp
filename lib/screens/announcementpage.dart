@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dao/model/announcement.dart';
 import 'package:dao/model/info.dart';
+import 'package:dao/screens/loginpage.dart';
 import 'package:dao/util/dataprovider.dart';
 import 'package:dao/widgets/cardwidget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,13 +13,11 @@ import 'package:provider/provider.dart';
 class AnnouncementPage extends StatefulWidget {
   AnnouncementPage({Key key, this.title}) : super(key: key);
   final String title;
-
   @override
   _AnnouncementPageState createState() => _AnnouncementPageState();
 }
 
 class _AnnouncementPageState extends State<AnnouncementPage> {
-  bool active = false;
   List<Info> cryptoList = [];
   final DateFormat formatter = DateFormat('MM/dd/yyyy');
   List<Announcement> dateList = [];
@@ -35,18 +35,47 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
     return Scaffold(
       appBar: AppBar(
+          actions: <Widget>[
+      Padding(
+      padding: EdgeInsets.only(right: 20.0),
+        child: GestureDetector(
+          onTap: () async {
+            await FirebaseAuth.instance.signOut();
+
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+          );},
+          child: Icon(
+            Icons.power_settings_new,
+            size: 26.0,
+          ),
+        )
+    ),
+          ],
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text("Hello"),
             FutureBuilder(
               future: getWalletAmount(),
               builder: (context,snap){
                 if (!snap.hasData) {
-                  return Text('Loading...');
+                  return Expanded(child: Container(child: Text('Loading...')));
                 }
                 else{
-                  return Text("Total: "+_provider.getWalletAmount());
+                  return Expanded(
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Column(
+                        children: [
+                          Text("Total "),
+                          Text(_provider.getWalletAmount()),
+                        ],
+                      ),
+                    ),
+                  );
                 }
               },
             ),
@@ -76,8 +105,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                         children: [
                           ConstrainedBox(
                             constraints: BoxConstraints(
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.75),
+                                maxHeight: MediaQuery.of(context).size.height * 0.75),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -175,14 +203,6 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
     return querySnapshot;
   }
 
-  Future<void> _onRefresh() async {
-    setState(() {
-      // getData();
-    });
-
-    return 'success';
-  }
-
   Future getAnnocumentList() async {
     CollectionReference _collectionRef =
         FirebaseFirestore.instance.collection('dao');
@@ -207,8 +227,6 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
         dateList.add(Announcement([], doc.id));
       }
     }).toList();
-
-
   }
 
   Future getWalletAmount() async{
