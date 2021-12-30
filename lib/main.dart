@@ -1,7 +1,5 @@
 import 'package:dao/screens/announcementpage.dart';
 import 'package:dao/screens/loginpage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:dao/util/dataprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
