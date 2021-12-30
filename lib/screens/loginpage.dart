@@ -53,17 +53,19 @@ class _LoginPageState extends State<LoginPage> {
           future: _initializeFirebase(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return SingleChildScrollView(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+              return Container(
+                alignment: Alignment.center,
+                child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'DAO',
-                        style: Theme.of(context).textTheme.headline1,
+                      Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Text(
+                          'DAO',
+                          style: Theme.of(context).textTheme.headline1,
+                        ),
                       ),
                       Form(
                         key: _formKey,
@@ -159,22 +161,22 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                     /*  SizedBox(width: 24.0),
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                            *//*  Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      RegisterPage(),
-                                                ),
-                                              );*//*
-                                            },
-                                            child: Text(
-                                              'Register',
-                                              style: TextStyle(color: Colors.white),
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                              *//*  Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RegisterPage(),
+                                                  ),
+                                                );*//*
+                                              },
+                                              child: Text(
+                                                'Register',
+                                                style: TextStyle(color: Colors.white),
+                                              ),
                                             ),
-                                          ),
-                                        ),*/
+                                          ),*/
                                   ],
                                 )
                               ],

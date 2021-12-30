@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 
 class DataProvider extends ChangeNotifier {
   String walletAmount;
-  List<Info> cryptoList = [];
   List<Announcement> dateList = [];
 
   void setWalletAmount(String amount) {
@@ -18,17 +17,37 @@ class DataProvider extends ChangeNotifier {
     return this.walletAmount;
   }
 
-  void addCryptoList(Info crypto) {
-    if(cryptoList == null){
-      cryptoList = [];
+
+  List<Info> getCryptoList(int index){
+    if(dateList[index].infoList == null){
+      dateList[index].infoList = [];
     }
-    this.cryptoList.add(crypto);
+    return this.dateList[index].infoList;
   }
 
-  List<Info> getcryptoListt(){
-    if(cryptoList == null){
-      cryptoList = [];
+  void addDateList(Announcement announcement) {
+    if(dateList == null){
+      dateList = [];
     }
-    return this.cryptoList;
+    this.dateList.add(announcement);
+  }
+
+  void removeDateList(Announcement announcement) {
+    if(dateList.contains(announcement)){
+      this.dateList.remove(announcement);
+    }
+  }
+
+  void removeCrypto(int index, Info info) {
+    if(dateList[index].infoList.contains(info)!=null){
+      this.dateList[index].infoList.remove(info);
+    }
+  }
+
+  List<Announcement> getDateList(){
+    if(dateList == null){
+      dateList = [];
+    }
+    return this.dateList;
   }
 }

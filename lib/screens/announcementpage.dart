@@ -18,15 +18,12 @@ class AnnouncementPage extends StatefulWidget {
 }
 
 class _AnnouncementPageState extends State<AnnouncementPage> {
-  List<Info> cryptoList = [];
   final DateFormat formatter = DateFormat('MM/dd/yyyy');
-  List<Announcement> dateList = [];
   DataProvider _provider;
-
+  CollectionReference _collectionRef;
   @override
   void initState() {
     super.initState();
-    getAnnocumentList();
   }
 
   @override
@@ -62,7 +59,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
               future: getWalletAmount(),
               builder: (context,snap){
                 if (!snap.hasData) {
-                  return Expanded(child: Container(child: Text('Loading...')));
+                  return Expanded(child: Container(child: Center(child: Text('Loading...'))));
                 }
                 else{
                   return Expanded(
@@ -94,14 +91,14 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                 );
               } else {
                 return ListView.separated(
-                  itemCount: dateList.length,
+                  itemCount: _provider.getDateList().length,
                   separatorBuilder: (context, index) {
                     return const Divider(height: 1.0);
                   },
                   itemBuilder: (context, indexx) {
                     return ExpansionTile(
                         title:
-                            Text(dateList[indexx].announcementDate.toString()),
+                            Text(_provider.getDateList()[indexx].announcementDate.toString()),
                         children: [
                           ConstrainedBox(
                             constraints: BoxConstraints(
@@ -115,7 +112,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                       shrinkWrap: true, //just set this property
                                       padding: const EdgeInsets.all(8.0),
                                       itemCount:
-                                          dateList[indexx].infoList.length,
+                                      _provider.getDateList()[indexx].infoList.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                             padding:
@@ -123,7 +120,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                             height: 120,
                                             width: double.maxFinite,
                                             child: CardWidget(context, index,
-                                                dateList[indexx].infoList));
+                                                _provider.getDateList()[indexx].infoList));
                                       }),
                                 ),
                               ],
@@ -140,59 +137,83 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 
   Future getData() async {
-    CollectionReference _collectionRef =
-        FirebaseFirestore.instance.collection('dao');
+    this._collectionRef = FirebaseFirestore.instance.collection('dao');
     QuerySnapshot querySnapshot = await _collectionRef.get();
+    querySnapshot.docs.map((doc) {
+      if (_provider.getDateList().length > 0) {
+        bool isExsist = false;
+        for (var data in _provider.getDateList()) {
+          if (data.announcementDate == doc.id) {
+            isExsist = true;
+          }
+        }
+        if (!isExsist) {
 
-    for (int i = 0; i < dateList.length; i++) {
-      await FirebaseFirestore.instance
-          .collection("dao")
+
+
+          _provider.addDateList(Announcement([], doc.id));
+        }
+      } else {
+        _provider.addDateList(Announcement([], doc.id));
+      }
+    }).toList();
+
+
+    for (int i = 0; i < _provider.getDateList().length; i++) {
+       _collectionRef
           .get()
           .then((querySnapshot) async {
         querySnapshot.docs.forEach((result) async {
           await FirebaseFirestore.instance
               .collection("dao")
-              .doc(dateList[i].announcementDate.toString())
+              .doc(_provider.getDateList()[i].announcementDate.toString())
               .collection("post1")
               .get()
               .then((querySnapshot) {
-            this.cryptoList = [];
             querySnapshot.docs.forEach((result) {
-              if (this.cryptoList == null) {
-                this.cryptoList = [];
-              }
-              if (cryptoList.length > 0) {
+              if (this._provider.getCryptoList(i).length > 0) {
                 bool isExsist = false;
-                for (var data in cryptoList) {
+                for (var data in this._provider.getCryptoList(i)) {
                   if (data.cryptoName == result.data()['cryptoName']) {
                     isExsist = true;
                   }
                 }
                 if (!isExsist) {
-                  cryptoList.add(Info(
-                    result.data()['totalAmount'],
-                    result.data()['cryptoName'],
-                    result.data()['announcementContent'],
-                  ));
-                  for (var date in dateList) {
-                    if (dateList[i].announcementDate.toString() ==
+                  print("vaar");
+                  setState(() {
+                    _provider.getDateList()[i].infoList.add(Info(
+                      result.data()['totalAmount'],
+                      result.data()['cryptoName'],
+                      result.data()['announcementContent'],
+                    )); });
+
+                  for (var date in _provider.getDateList()) {
+                    if (_provider.getDateList()[i].announcementDate.toString() ==
                         date.announcementDate.toString()) {
-                      dateList[i].infoList = cryptoList;
+                      print("pppp");
+                      setState(() {
+                        _provider.getDateList()[i].infoList = this._provider.getCryptoList(i);
+                      });
+
                     }
                   }
                 }
               } else {
-                cryptoList.add(Info(
-                  result.data()['totalAmount'],
-                  result.data()['cryptoName'],
-                  result.data()['announcementContent'],
-                ));
-                for (var date in dateList) {
-                  if (dateList[i].announcementDate.toString() ==
-                      date.announcementDate.toString()) {
-                    dateList[i].infoList = cryptoList;
-                  }
-                }
+             setState(() {
+
+               _provider.getDateList()[i].infoList.add(Info(
+                 result.data()['totalAmount'],
+                 result.data()['cryptoName'],
+                 result.data()['announcementContent'],
+               ));
+               for (var date in _provider.getDateList()) {
+                 if (_provider.getDateList()[i].announcementDate.toString() ==
+                     date.announcementDate.toString()) {
+                   _provider.getDateList()[i].infoList = this._provider.getCryptoList(i);
+
+                 }
+               }
+             });
               }
             });
           });
@@ -202,36 +223,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
     return querySnapshot;
   }
-
-  Future getAnnocumentList() async {
-    CollectionReference _collectionRef =
-        FirebaseFirestore.instance.collection('dao');
-
-    dateList = [];
-    QuerySnapshot querySnapshot = await _collectionRef.get();
-    querySnapshot.docs.map((doc) {
-      if (this.dateList == null) {
-        this.dateList = [];
-      }
-      if (dateList.length > 0) {
-        bool isExsist = false;
-        for (var data in dateList) {
-          if (data.announcementDate == doc.id) {
-            isExsist = true;
-          }
-        }
-        if (!isExsist) {
-          dateList.add(Announcement([], doc.id));
-        }
-      } else {
-        dateList.add(Announcement([], doc.id));
-      }
-    }).toList();
-  }
-
   Future getWalletAmount() async{
-    CollectionReference _collectionRef =
-    FirebaseFirestore.instance.collection('wallet');
+     this._collectionRef = FirebaseFirestore.instance.collection('wallet');
     QuerySnapshot querySnapshot = await _collectionRef.get();
 
     await FirebaseFirestore.instance

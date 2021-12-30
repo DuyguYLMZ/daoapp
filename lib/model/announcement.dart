@@ -6,6 +6,8 @@ class Announcement {
   String announcementDate;
 
   Announcement(this.infoList, this.announcementDate);
+
+
 /*
 
   String get announcementDate => _announcementDate;
